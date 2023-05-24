@@ -18,14 +18,14 @@ export const createCatogory = async (req, res) => {
       data: category,
     });
   } catch (error) {
-    return res.status(400).json({
+    res.status(500).json({
       success: false,
-      message: "something went wrong",
+      message: "Internal Server Error",
     });
   }
 };
 
-export const updateCategory= async (req, res) => {
+export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const data = req?.body;
@@ -56,7 +56,10 @@ export const updateCategory= async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };
 
@@ -85,7 +88,10 @@ export const deleteCategory = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };
 
@@ -108,31 +114,43 @@ export const getSingleCategory = async (req, res) => {
       message: "Category fetched successfully",
       data: check,
     });
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 export const getAllCategorys = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
-  const offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-  const categorys = await Category.findAndCountAll({
-    where: {
-      deleted: false,
-    },
-    limit,
-    offset,
-  });
+    const categorys = await Category.findAndCountAll({
+      where: {
+        deleted: false,
+      },
+      limit,
+      offset,
+    });
 
-  res.status(200).json({
-    success: true,
-    message: "All Categorys fetched successfully",
-    data: {
+    res.status(200).json({
+      success: true,
+      message: "All Categorys fetched successfully",
+      data: {
         Categorys: categorys.rows,
-      count: categorys.count,
-      totalPages: Math.ceil(categorys.count / limit),
-      currentPage: page,
-    },
-  });
+        count: categorys.count,
+        totalPages: Math.ceil(categorys.count / limit),
+        currentPage: page,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
