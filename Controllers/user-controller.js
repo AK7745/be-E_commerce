@@ -1,23 +1,34 @@
-import { User } from "../models/user";
+import { User } from "../models/user.js";
+import { hash_pass } from "../helperFunctions/crypt.js";
 
 export const signup=async (req,res)=>{
-const {
-    name,
-    email,
-    phoneNumber,
-    password
-}=req.body
+try {
+    const {
+        name,
+        email,
+        phoneNumber,
+        password
+    }=req.body
+
+    if(!name || !email || !phoneNumber || !password){
+        return res.status(400).json({
+            success: false,
+            message: "the required feild are not denfined",
+          });
+    }
+    const hashPassword=await hash_pass(password)
+    const user=await User.create({
+        name,
+        email,
+        phoneNumber,
+        password:hashPassword
+    })
+    console.log(user);
+    res.status(200).json({success: true, message:"user created successfully",data: user});
+} catch (error) {
+    res.status(400).json({success: false, message:"something went wrong"});
     
-if(!name || !email || !phoneNumber || !password){
-    return res.status(400).json({
-        success: false,
-        message: "the required feild are not denfined",
-      });
 }
-const user=await User.create({
-    name,
-    email,
-    phoneNumber,
-    password
-})
 }
+
+// const signIn = async (req, res) => {}

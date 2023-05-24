@@ -3,6 +3,7 @@ import { connectDB } from "./database.js";
 import productRoutes from "./Routes/product-routes.js";
 import cors from 'cors'
 import categoryRoutes from "./Routes/category-routes.js";
+import userRoutes from "./Routes/user-routes.js";
 const app=express();
 
 connectDB()
@@ -13,6 +14,8 @@ app.use('/uploads', express.static('uploads'))
 //Routes
 app.use('/product',productRoutes)
 app.use('/category',categoryRoutes)
+app.use('/user',userRoutes)
+
 
 
 
