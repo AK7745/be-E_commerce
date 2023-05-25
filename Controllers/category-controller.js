@@ -1,4 +1,5 @@
 import { Category } from "../models/category.js";
+import { Product } from "../models/product.js";
 
 export const createCatogory = async (req, res) => {
   try {
@@ -103,6 +104,7 @@ export const getSingleCategory = async (req, res) => {
         id,
         deleted: false,
       },
+      include:[Product]
     });
     if (!check) {
       return res

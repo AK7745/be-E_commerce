@@ -1,3 +1,4 @@
+import { Category } from "../models/category.js";
 import { Product } from "../models/product.js";
 import { NUMBER, Op } from "sequelize";
 
@@ -110,6 +111,7 @@ export const getSingleProduct = async (req, res) => {
         id,
         deleted: false,
       },
+      include:[Category]
     });
     if (!check) {
       return res
