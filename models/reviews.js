@@ -9,5 +9,9 @@ export const Reviews=sequelize.define('Reviews',{
     productId:{
         type:DataTypes.INTEGER,
         allowNull:true
-    }
+    },
+    deleted:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false
+      }
 })
