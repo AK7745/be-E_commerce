@@ -1,6 +1,7 @@
 import { Category } from "../models/category.js";
 import { Product } from "../models/product.js";
 import { NUMBER, Op } from "sequelize";
+import { Reviews } from "../models/reviews.js";
 
 export const createProduct = async (req, res) => {
   try {
@@ -142,6 +143,7 @@ export const getAllProducts = async (req, res) => {
       where: {
         deleted: false,
       },
+      include:[Reviews],
       limit,
       offset,
     });

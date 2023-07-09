@@ -1,31 +1,31 @@
+import { Product } from "../models/product.js";
 import { Reviews } from "../models/reviews.js";
 
 export const createReview = async (req, res) => {
- try{
-    const { description , productId} = req.body;
+  try {
+    const { description, productId } = req.body;
     if (!description) {
       return res.status(400).json({
         success: false,
         message: "the required feild are not denfined",
       });
     }
-  const review=await Reviews.create({
+    const review = await Reviews.create({
       description,
-      productId
-  })
-  
-  res.status(201).json({
+      productId,
+    });
+
+    res.status(201).json({
       success: true,
       message: "the category was successfully created",
       data: review,
     });
- }
- catch (error) {
-  res.status(500).json({
-    success: false,
-    message: "Internal Server Error",
-  });
-}
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 export const updateReview = async (req, res) => {
@@ -69,12 +69,15 @@ export const updateReview = async (req, res) => {
 export const deleteReview = async (req, res) => {
   try {
     const { id } = req.params;
-    const [rowsAffected] = await Reviews.update({deleted:true}, {
-      where: {
-        id,
-        deleted: false,
-      },
-    });
+    const [rowsAffected] = await Reviews.update(
+      { deleted: true },
+      {
+        where: {
+          id,
+          deleted: false,
+        },
+      }
+    );
 
     if (rowsAffected === 0) {
       return res
@@ -85,7 +88,6 @@ export const deleteReview = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Review deleted successfully",
-      
     });
   } catch (error) {
     console.log(error);
@@ -96,25 +98,49 @@ export const deleteReview = async (req, res) => {
   }
 };
 
-export const getSingleReview = async(req, res) => {
-  const {id}=req?.params
-  if(!id){
+export const getSingleReview = async (req, res) => {
+  const { id } = req?.params;
+  if (!id) {
     return res.status(404).json({
-      success:false,
-      message: "required feilds are not provided"
-    })
+      success: false,
+      message: "required feilds are not provided",
+    });
   }
-const review=await Reviews.findOne({
-  where:{
-    id,
-    deleted:false,
-  }
-})
-res.status(200).json({
-  success:true,
-  message:"Review fetched successfully",
-  data:review
-})
+  const review = await Reviews.findOne({
+    where: {
+      id,
+      deleted: false,
+    },
+    include:[Product]
+  });
+  res.status(200).json({
+    success: true,
+    message: "Review fetched successfully",
+    data: review,
+  });
 };
 
-export const getAllReview = (req, res) => {};
+export const getAllReview = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const offset = (page - 1) * limit;
+  const reviews=await Reviews.findAndCountAll({
+    where:{
+      deleted:false,    
+    },
+    include:[Product],
+    limit,
+    offset
+  })
+  res.status(200).json({
+    success: true,
+    message: "All Reviews fetched successfully",
+    data: {
+      reviews: reviews.rows,
+      count: reviews.count,
+      totalPages: Math.ceil(reviews.count / limit),
+      currentPage: page,
+    },
+  });
+};
